@@ -1,0 +1,1260 @@
+import React, { useRef, useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  Heart,
+  Home,
+  GraduationCap,
+  HeartHandshake,
+  BookOpen,
+  Award,
+  ShieldCheck,
+  Users,
+  CheckCircle2,
+  Calendar,
+  Sparkles,
+  ArrowRight,
+  ChevronRight,
+  ChevronLeft,
+  ChevronDown,
+  Building2,
+  FileCheck2,
+  Lock,
+  Camera,
+  Compass,
+  Utensils,
+  Shirt,
+  Stethoscope
+} from 'lucide-react';
+import { Header } from '../../components/Header';
+import { Footer } from '../../components/Footer';
+import { FloatingWhatsApp } from '../../components/FloatingWhatsApp';
+import { DarkToLightDivider, LightToDarkDivider } from '../../components/SectionDividers';
+import { pixelTracker } from '../../utils/pixelTracker';
+
+// Real Project Image Imports
+import aboutHeroBgDesktop from '../../assets/images/about_page_hero_section_desktop_view.jpeg';
+import aboutHeroBgMobile from '../../assets/images/Gallery_page_hero_background_img_mobile_view.jpeg';
+import ctaImage from '../../assets/images/trust_section_organic_meal.jpg?w=800&format=webp';
+import charityCauseIllustration from '../../assets/images/charity_cause_illustration.png';
+
+import heroRedhillsOrphanage from '../../assets/images/hero_redhills_orphanage.jpg?w=800&format=webp';
+import elderlyFoodCareDrive from '../../assets/images/elderly_food_care_drive.jpg?w=800&format=webp';
+import heroSpecialNeedsCare from '../../assets/images/hero_special_needs_care.jpg?w=800&format=webp';
+import heroTuitionSchoolMeals from '../../assets/images/hero_tuition_school_meals.jpg?w=800&format=webp';
+
+import founderPresidentImg from '../../images/Founder_President.png?w=600&format=webp';
+import managingTrusteeImg from '../../images/Managing_trustee.png?w=600&format=webp';
+
+import sponsorBreakfastImg from '../../images/veg_beakfast.png?w=600&format=webp';
+import sponsorLunchImg from '../../images/lunch_high_rate.png?w=600&format=webp';
+import sponsorDinnerImg from '../../images/veg_dinner.png?w=600&format=webp';
+import sponsorEducationImg from '../../images/education_support.png?w=600&format=webp';
+import sponsorHealthcareImg from '../../images/medical_support.png?w=600&format=webp';
+import sponsorClothingImg from '../../images/clothing_support.png?w=600&format=webp';
+
+interface AboutPageProps {
+  onOpenDonateModal: (amount?: number) => void;
+  onNavigate: (page: 'home' | 'about' | 'gallery' | 'contact' | 'donate', anchor?: string) => void;
+}
+
+const STATS_CARDS = [
+  { label: 'Years of Service', value: '14+', subtitle: 'Est. 5th July 2010', icon: Calendar, iconBg: 'bg-amber-500/15 text-amber-600' },
+  { label: 'Orphanage Children', value: '45', subtitle: 'Resident Boys & Girls', icon: Home, iconBg: 'bg-emerald-500/15 text-emerald-600' },
+  { label: 'Elderly Seniors', value: '20', subtitle: 'Day Care & Shelter', icon: HeartHandshake, iconBg: 'bg-rose-500/15 text-rose-600' },
+  { label: 'Special Needs Kids', value: '23', subtitle: 'Free Van Transportation', icon: GraduationCap, iconBg: 'bg-blue-500/15 text-blue-600' },
+  { label: 'Tuition Students', value: '346', subtitle: 'Across 8 Centers', icon: BookOpen, iconBg: 'bg-indigo-500/15 text-indigo-600' }
+];
+
+const PROGRAMS = [
+  {
+    icon: Home,
+    title: 'Redhills Orphanage Home',
+    location: 'Redhills, Northern Chennai',
+    tag: '15+ Years Active',
+    image: heroRedhillsOrphanage,
+    description: 'Operating on an acre of land with separate dormitories, study halls, hygienic dining facilities, and playgrounds for 45 resident boys and girls.',
+    details: [
+      'Separate dormitories & study rooms for boys & girls',
+      '16 committed full-time & part-time caregivers',
+      'Nutritious 3-meal daily diet & medical checkups',
+      'Extracurricular activities & annual sports days'
+    ]
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Old Age Day Care Center',
+    location: 'Redhills Campus, Chennai',
+    tag: 'Senior Care',
+    image: elderlyFoodCareDrive,
+    description: 'Providing food, shelter, daily essential medication, and loving care for 20 abandoned street elderly seniors in Redhills.',
+    details: [
+      'Free wholesome daily meals & evening tea',
+      'Periodic medical camps & prescription drugs',
+      'Recreational space & daily companion care',
+      'Dignified end-of-life shelter & emotional support'
+    ]
+  },
+  {
+    icon: GraduationCap,
+    title: 'Rural Education & Support',
+    location: 'Thiruvallur District',
+    tag: 'Learning & Growth',
+    image: heroSpecialNeedsCare,
+    description: 'Tailored educational programs, learning resources, and doorstep van transport for underprivileged rural children.',
+    details: [
+      'Certified educators & community volunteers',
+      'Dedicated van doorstep transportation support',
+      'Learning materials, books & skill development',
+      'Nutritious snacks & individual progress tracking'
+    ]
+  },
+  {
+    icon: BookOpen,
+    title: '8 Evening Tuition Centers',
+    location: 'Chennai & Thiruvallur Districts',
+    tag: '346 Children',
+    image: heroTuitionSchoolMeals,
+    description: 'Free evening tuition across 8 centers in Vyasarpadi, Pulianthope, Surapattu, Periyapalem, Vichoor, Perungavoor, Athipattu, and Thirumullaivoyal.',
+    details: [
+      'Free evening tutoring by qualified educators',
+      'School bags, notebooks, textbooks & stationery',
+      'Daily evening protein snacks & wholesome meals',
+      'Hygiene kits: soaps, shampoos, footwear & toothbrush'
+    ]
+  }
+];
+
+const JOURNEY_MILESTONES = [
+  {
+    year: '2010',
+    title: 'Trust Foundation Established',
+    desc: 'Registered Public Charitable Trust (Reg No. 132/2010) launched on 5th July 2010 in Chennai.'
+  },
+  {
+    year: '2012',
+    title: 'Redhills Orphanage Home',
+    desc: 'Established 1-acre campus providing dormitories, dining, and healthcare for 45 resident boys and girls.'
+  },
+  {
+    year: '2015',
+    title: 'Old Age Senior Care Center',
+    desc: 'Opened dedicated day care and shelter providing food and medication for 20 abandoned street elders.'
+  },
+  {
+    year: '2018',
+    title: 'Special Needs Rural Support',
+    desc: 'Integrated free van transportation and specialized educational care in Thiruvallur district.'
+  },
+  {
+    year: '2022-Present',
+    title: '8 Evening Tuition Centers',
+    desc: 'Expanded free tuition, nutrition, and hygiene kits serving 346 children across rural & urban centers.'
+  }
+];
+
+const STATUTORY_CREDENTIALS = [
+  { title: 'Registered Public Trust', desc: 'Reg. No. 132/2010 • Govt. of Tamil Nadu', icon: Building2 },
+  { title: '80G Tax Exemption', desc: '50% Tax Exemption for Donors under IT Act', icon: FileCheck2 },
+  { title: '12A Income Tax Cert.', desc: 'Tax Exempt Charitable Entity Status', icon: ShieldCheck },
+  { title: 'NITI Aayog Darpan', desc: 'Official Govt. NGO Darpan Portal Registered', icon: Award },
+  { title: 'CSR-1 Approved', desc: 'Eligible for Corporate Social Responsibility Funds', icon: Lock }
+];
+
+const SPONSOR_CAUSES = [
+  {
+    id: 'cause-breakfast',
+    title: 'Breakfast Support',
+    amount: 300,
+    amountLabel: '₹300',
+    image: sponsorBreakfastImg,
+    icon: Utensils,
+    description: 'Provide wholesome morning breakfast meals to orphaned children and elders to start their day with energy.'
+  },
+  {
+    id: 'cause-lunch',
+    title: 'Hot Lunch & Meals',
+    amount: 500,
+    amountLabel: '₹500',
+    image: sponsorLunchImg,
+    icon: Utensils,
+    description: 'Sponsor protein-rich hot lunches for 45 orphanage kids and 20 abandoned seniors at our Redhills campus.'
+  },
+  {
+    id: 'cause-dinner',
+    title: 'Wholesome Dinner',
+    amount: 1000,
+    amountLabel: '₹1,000',
+    image: sponsorDinnerImg,
+    icon: Utensils,
+    description: 'Provide freshly cooked warm dinner meals for resident children and evening tuition students.'
+  },
+  {
+    id: 'cause-education',
+    title: 'Education & Tuition Support',
+    amount: 2500,
+    amountLabel: '₹2,500',
+    image: sponsorEducationImg,
+    icon: GraduationCap,
+    description: 'Sponsor school backpacks, textbooks, notebooks, and learning tools for 346 evening tuition children.'
+  },
+  {
+    id: 'cause-healthcare',
+    title: 'Healthcare & Medical Support',
+    amount: 1500,
+    amountLabel: '₹1,500',
+    image: sponsorHealthcareImg,
+    icon: Stethoscope,
+    description: 'Support periodic medical checkups, essential prescription drugs, and health drives for elders & kids.'
+  },
+  {
+    id: 'cause-clothing',
+    title: 'Clothing & Hygiene Kits',
+    amount: 1000,
+    amountLabel: '₹1,000',
+    image: sponsorClothingImg,
+    icon: Shirt,
+    description: 'Provide new clothing, footwear, soaps, shampoos, and personal hygiene supplies for resident children.'
+  }
+];
+
+export const AboutPage: React.FC<AboutPageProps> = ({ onOpenDonateModal, onNavigate }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [openPillar, setOpenPillar] = useState<'vision' | 'mission' | 'values' | null>('vision');
+  const [currentProgramIndex, setCurrentProgramIndex] = useState(0);
+
+  const handleNextProgram = () => {
+    setCurrentProgramIndex((prev) => (prev + 1) % PROGRAMS.length);
+  };
+
+  const handlePrevProgram = () => {
+    setCurrentProgramIndex((prev) => (prev - 1 + PROGRAMS.length) % PROGRAMS.length);
+  };
+
+  useEffect(() => {
+    const programTimer = setInterval(() => {
+      setCurrentProgramIndex((prev) => (prev + 1) % PROGRAMS.length);
+    }, 4000);
+    return () => clearInterval(programTimer);
+  }, []);
+
+  const scrollToCard = (index: number) => {
+    setActiveIndex(index);
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const cardElement = container.children[index] as HTMLElement;
+    if (cardElement) {
+      const cardOffsetLeft = cardElement.offsetLeft;
+      const cardWidth = cardElement.offsetWidth;
+      const containerWidth = container.offsetWidth;
+      const targetScroll = cardOffsetLeft - (containerWidth / 2) + (cardWidth / 2);
+
+      container.scrollTo({
+        left: Math.max(0, targetScroll),
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => {
+        const nextIdx = (prev + 1) % PROGRAMS.length;
+        scrollToCard(nextIdx);
+        return nextIdx;
+      });
+    }, 3600);
+
+    return () => clearInterval(timer);
+  }, [isPaused]);
+
+  return (
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-[#0a2240] text-slate-900 font-sans antialiased selection:bg-[#da8a24] selection:text-[#0a2240] relative">
+      
+      {/* 1. Header (EXACT EXISTING NAVBAR - UNCHANGED) */}
+      <Header
+        currentPage="about"
+        onOpenDonateModal={onOpenDonateModal}
+        onNavigate={onNavigate}
+      />
+
+      {/* 2. HERO SECTION (Dark Neutral Overlay for vivid clear image) */}
+      <section className="pt-28 sm:pt-36 pb-12 sm:pb-16 bg-slate-950 text-white relative overflow-hidden min-h-[75vh] lg:min-h-screen flex items-center">
+        {/* Desktop Background Image (Hidden on Mobile) */}
+        <div 
+          className="hidden md:block absolute inset-0 w-full h-full bg-cover bg-center lg:bg-top pointer-events-none opacity-90"
+          style={{ backgroundImage: `url(${aboutHeroBgDesktop})` }}
+        />
+
+        {/* Mobile Background Image (Block on Mobile, Hidden on Desktop) */}
+        <div 
+          className="block md:hidden absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none opacity-90"
+          style={{ backgroundImage: `url(${aboutHeroBgMobile})` }}
+        />
+
+        {/* Neutral Dark Gradient Overlay (No Blue Mask) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent pointer-events-none" />
+
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 lg:px-12 relative z-10 w-full">
+          
+          <div className="max-w-3xl space-y-5">
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-4"
+            >
+              {/* Main Heading: All White Color */}
+              <h1 className="text-3xl sm:text-5xl lg:text-[54px] font-semibold text-white tracking-tight leading-[1.1]">
+                Empowering Lives with Dignity, Equality & Hope
+              </h1>
+
+              {/* Concise Hero Paragraph */}
+              <p className="text-sm sm:text-base text-slate-200 font-normal leading-relaxed max-w-[600px]">
+                TRUTH FOUNDATION is a registered Public Charitable Trust established on 5th July 2010 in Chennai, dedicated to creating equal opportunities, education, shelter, and compassionate care for orphaned children and elders across Tamil Nadu.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-row items-center justify-center sm:justify-start gap-3 sm:gap-4 flex-wrap xs:flex-nowrap">
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    pixelTracker.trackDonateClick(500, 'About Page Hero CTA');
+                    onOpenDonateModal(500);
+                  }}
+                  className="bg-[#da8a24] hover:bg-[#c77a1e] text-[#0a2240] font-semibold px-4 sm:px-7 py-3.5 sm:py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-base uppercase tracking-wider min-h-[44px] sm:min-h-[48px] whitespace-nowrap"
+                >
+                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 fill-[#0a2240] shrink-0" />
+                  <span>Support Our Cause</span>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => onNavigate('contact')}
+                  className="bg-[#071b34] hover:bg-[#163863] text-white font-semibold border border-[#da8a24]/50 px-4 sm:px-7 py-3.5 sm:py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-base min-h-[44px] sm:min-h-[48px] whitespace-nowrap"
+                >
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#da8a24] shrink-0" />
+                  <span>Contact Our Team</span>
+                </motion.button>
+              </div>
+            </motion.div>
+
+          </div>
+
+        </div>
+
+        {/* ORGANIC WAVES SECTION DIVIDER */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none">
+          <DarkToLightDivider bgFrom="transparent" bgTo="#ffffff" />
+        </div>
+      </section>
+
+      {/* 4. IMPACT AT A GLANCE (Heading Removed, No Background Color for Cards/Text, Centered with Professional Colored Icons) */}
+      <section className="py-10 sm:py-14 bg-white text-slate-900 relative">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 lg:px-12 flex flex-col items-center justify-center">
+          
+          {/* Desktop Display: Centered Borderless & Backgroundless Cards Grid */}
+          <div className="hidden md:flex flex-wrap items-center justify-center gap-6 lg:gap-8 w-full max-w-5xl mx-auto">
+            {STATS_CARDS.map((stat, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                className="bg-transparent border-0 shadow-none p-3 flex flex-col items-center text-center space-y-1.5 cursor-default min-w-[170px]"
+              >
+                <div className={`w-13 h-13 sm:w-14 sm:h-14 rounded-2xl ${stat.iconBg} flex items-center justify-center mb-1 shrink-0`}>
+                  <stat.icon className="w-6 h-6 sm:w-7 sm:h-7" />
+                </div>
+                <div className="text-3xl sm:text-4xl font-semibold text-[#0a2240] tracking-tight">
+                  {stat.value}
+                </div>
+                <div className="text-sm font-medium text-slate-700">
+                  {stat.label}
+                </div>
+                <div className="text-xs text-[#da8a24] font-medium">
+                  {stat.subtitle}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile Display: Centered Track */}
+          <div className="md:hidden overflow-hidden relative w-full -mx-4 px-4 py-2">
+            <motion.div
+              animate={{ x: ['-50%', '0%'] }}
+              transition={{ repeat: Infinity, duration: 16, ease: 'linear' }}
+              className="flex gap-4 w-max items-center justify-center"
+            >
+              {[...STATS_CARDS, ...STATS_CARDS].map((stat, idx) => (
+                <div
+                  key={idx}
+                  className="w-[180px] shrink-0 flex flex-col items-center text-center p-3 bg-transparent border-0 shadow-none space-y-1"
+                >
+                  <div className={`w-12 h-12 rounded-2xl ${stat.iconBg} flex items-center justify-center mb-0.5 shrink-0`}>
+                    <stat.icon className="w-6 h-6" />
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-semibold text-[#0a2240] tracking-tight">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs sm:text-sm font-medium text-slate-700">
+                    {stat.label}
+                  </div>
+                  <div className="text-[11px] font-medium text-[#da8a24]">
+                    {stat.subtitle}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 5. OUR ORIGIN & FOUNDATION STORY + JOURNEY TIMELINE */}
+      <section className="py-12 sm:py-16 bg-[#f8fafc] text-slate-900 relative overflow-hidden">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 lg:px-12 space-y-16">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            
+            {/* LEFT COLUMN: FOUNDATION HEADING, FOUNDERS IN ROUND FRAMES & INCREASED TEXT SIZE */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-6 space-y-6"
+            >
+              {/* Heading for Left Side Section */}
+              <div className="space-y-1">
+                <span className="text-[#da8a24] font-normal text-xs sm:text-sm uppercase tracking-widest block">
+                  WHO WE ARE?
+                </span>
+                <h2 className="text-2xl sm:text-4xl font-normal text-[#0a2240] tracking-tight leading-tight">
+                  Our Leadership & Foundation Story
+                </h2>
+              </div>
+
+              {/* Founders Section with Significantly Enlarged Round Frames & Text Near Image */}
+              <div className="space-y-6 max-w-[580px]">
+                {/* 1st Founder: Round Frame Aligned on Left */}
+                <div className="flex items-center gap-5 sm:gap-6 bg-transparent p-0 border-0 shadow-none">
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shrink-0 border-2 border-[#da8a24]/50 shadow-md">
+                    <img
+                      src={founderPresidentImg}
+                      alt="Dr. D.Dayanandam"
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-xl sm:text-2xl font-normal text-[#0a2240]">
+                      Dr. D.Dayanandam
+                    </div>
+                    <div className="text-sm sm:text-base font-normal text-slate-600">
+                      Founder & President of TRUTH FOUNDATION
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2nd Founder: Round Frame Aligned with Text Near Image */}
+                <div className="flex items-center gap-5 sm:gap-6 justify-end bg-transparent p-0 border-0 shadow-none">
+                  <div className="space-y-1 text-right">
+                    <div className="text-xl sm:text-2xl font-normal text-[#0a2240]">
+                      Mrs. Shara Daya
+                    </div>
+                    <div className="text-sm sm:text-base font-normal text-slate-600">
+                      Managing Trustee
+                    </div>
+                  </div>
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shrink-0 border-2 border-[#da8a24]/50 shadow-md">
+                    <img
+                      src={managingTrusteeImg}
+                      alt="Mrs. Shara Daya"
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Description Text with Increased Font Size */}
+              <div className="space-y-3 text-slate-700 text-base sm:text-lg leading-relaxed font-normal">
+                <p>
+                  TRUTH FOUNDATION is a volunteer public charitable trust doing dedicated service for orphan, semi-orphan, and destitute children since 2010.
+                </p>
+                <p>
+                  We support 45+ resident children and 20+ seniors with nutritious food, education, clothing, medical care, and shelter. Over 150+ children have benefited, with many graduating and standing on their own feet.
+                </p>
+                <p>
+                  Operating on a 1-acre campus at Redhills, Chennai, our facilities include separate dormitories, dining halls, prayer halls, study halls, and a special needs school.
+                </p>
+              </div>
+
+              {/* Verification Badges */}
+              <div className="pt-2 flex flex-wrap items-center gap-3 text-xs sm:text-sm font-normal">
+                <div className="flex items-center gap-2 bg-[#da8a24]/15 text-[#0a2240] border border-[#da8a24]/30 rounded-xl px-4 py-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#da8a24]" />
+                  <span>100% Direct Impact Delivery</span>
+                </div>
+                <div className="flex items-center gap-2 bg-[#0a2240]/10 text-[#0a2240] border border-[#0a2240]/20 rounded-xl px-4 py-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#da8a24]" />
+                  <span>80G Tax Exemption Certified</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* RIGHT COLUMN: OUR JOURNEY TIMELINE (~50%) */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="lg:col-span-6 space-y-6"
+            >
+              <div className="space-y-1">
+                <span className="text-[#da8a24] font-normal text-xs sm:text-sm uppercase tracking-widest block">
+                  OUR JOURNEY
+                </span>
+                <h2 className="text-2xl sm:text-4xl font-normal text-[#0a2240] tracking-tight leading-tight">
+                  14-Year Timeline of Growth & Impact
+                </h2>
+              </div>
+
+              <div className="relative pl-6 sm:pl-8 space-y-8 border-l-2 border-[#da8a24] pt-2">
+                {JOURNEY_MILESTONES.map((milestone, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0.2 }}
+                    transition={{ duration: 0.4, delay: idx * 0.08 }}
+                    className="relative group"
+                  >
+                    {/* Gold Timeline Node */}
+                    <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-[#da8a24] ring-4 ring-[#f8fafc]" />
+
+                    <div className="bg-transparent border-0 shadow-none p-0 space-y-1.5 transition-all">
+                      <span className="text-xs font-semibold text-[#da8a24] uppercase tracking-wider bg-[#da8a24]/15 px-3 py-1 rounded-full inline-block">
+                        {milestone.year}
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-semibold text-[#0a2240]">
+                        {milestone.title}
+                      </h3>
+                      <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                        {milestone.desc}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+            </motion.div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 6. VISION / MISSION / VALUES (STADIUM ACCORDION MATCHING REFERENCE IMAGE) */}
+      <section className="py-16 sm:py-24 bg-white text-slate-900 relative">
+        <div className="max-w-[960px] mx-auto px-4 sm:px-8 space-y-8">
+          
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[#da8a24] font-semibold text-xs sm:text-sm uppercase tracking-widest block">
+              OUR FOUNDATIONAL PILLARS
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-semibold text-[#0a2240] tracking-tight">
+              Vision, Mission & Core Values
+            </h2>
+          </div>
+
+          {/* Accordion Pill Rows Stacked Vertically */}
+          <div className="space-y-4">
+            
+            {/* 1. OUR VISION (Navy Pill) */}
+            <div className="overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setOpenPillar(openPillar === 'vision' ? null : 'vision')}
+                className={`w-full bg-[#071b34] text-white p-3.5 sm:p-4 px-5 sm:px-7 flex items-center justify-between cursor-pointer transition-all duration-300 ${
+                  openPillar === 'vision' ? 'rounded-t-[28px] rounded-b-none' : 'rounded-l-full rounded-r-2xl sm:rounded-r-3xl'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  {/* Gold Circle Badge with Dark Navy Icon */}
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#da8a24] border-2 border-[#071b34] text-[#071b34] flex items-center justify-center font-semibold shrink-0 shadow-md">
+                    <Compass className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold tracking-tight text-white">
+                    Our Vision
+                  </span>
+                </div>
+                <ChevronDown
+                  className={`w-5 h-5 sm:w-6 sm:h-6 text-white transition-transform duration-300 ${
+                    openPillar === 'vision' ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {openPillar === 'vision' && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  >
+                    <div className="bg-[#071b34] text-white p-6 sm:p-8 rounded-b-[28px] border-t border-[#163863] space-y-4">
+                      <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal">
+                        To establish a just and equitable social order where every child, elder, and special-needs individual lives with dignity, freedom, equal opportunity, and complete access to education, nutrition, and healthcare.
+                      </p>
+                      <div className="pt-3 border-t border-[#163863] text-xs sm:text-sm text-[#da8a24] font-semibold flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#da8a24]" />
+                        <span>Equal Opportunity for All</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 2. OUR MISSION (Gold Pill) */}
+            <div className="overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setOpenPillar(openPillar === 'mission' ? null : 'mission')}
+                className={`w-full bg-[#da8a24] text-[#071b34] p-3.5 sm:p-4 px-5 sm:px-7 flex items-center justify-between cursor-pointer transition-all duration-300 ${
+                  openPillar === 'mission' ? 'rounded-t-[28px] rounded-b-none' : 'rounded-l-full rounded-r-2xl sm:rounded-r-3xl'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  {/* White Circle Badge with Gold Icon */}
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-[#da8a24] flex items-center justify-center font-semibold shrink-0 shadow-md">
+                    <Heart className="w-5 h-5 sm:w-6 sm:h-6 fill-[#da8a24]" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold tracking-tight text-[#071b34]">
+                    Our Mission
+                  </span>
+                </div>
+                <ChevronDown
+                  className={`w-5 h-5 sm:w-6 sm:h-6 text-[#071b34] transition-transform duration-300 ${
+                    openPillar === 'mission' ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {openPillar === 'mission' && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  >
+                    <div className="bg-[#da8a24] text-[#071b34] p-6 sm:p-8 rounded-b-[28px] border-t border-[#071b34]/20 space-y-4">
+                      <p className="text-base sm:text-lg text-[#071b34]/90 leading-relaxed font-medium">
+                        Empowering rural communities through free education, evening tuition centers, specialized therapy for children with disabilities, shelter and food for abandoned seniors, and health awareness campaigns.
+                      </p>
+                      <div className="pt-3 border-t border-[#071b34]/20 text-xs sm:text-sm text-[#071b34] font-semibold flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#071b34]" />
+                        <span>Grassroots Social Transformation</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 3. OUR VALUES (Light Pill) */}
+            <div className="overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setOpenPillar(openPillar === 'values' ? null : 'values')}
+                className={`w-full bg-[#f4f7fb] text-[#071b34] border border-slate-200/80 p-3.5 sm:p-4 px-5 sm:px-7 flex items-center justify-between cursor-pointer transition-all duration-300 ${
+                  openPillar === 'values' ? 'rounded-t-[28px] rounded-b-none' : 'rounded-l-full rounded-r-2xl sm:rounded-r-3xl'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  {/* White Circle Badge with Gold Outline */}
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border-2 border-[#da8a24] text-[#da8a24] flex items-center justify-center font-semibold shrink-0 shadow-sm">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-semibold tracking-tight text-[#071b34]">
+                    Our Values
+                  </span>
+                </div>
+                <ChevronDown
+                  className={`w-5 h-5 sm:w-6 sm:h-6 text-[#071b34] transition-transform duration-300 ${
+                    openPillar === 'values' ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {openPillar === 'values' && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  >
+                    <div className="bg-[#f4f7fb] text-slate-900 p-6 sm:p-8 rounded-b-[28px] border-t border-slate-200 space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm sm:text-base text-slate-700 font-medium">
+                        <div className="flex items-center gap-2 bg-white p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                          <CheckCircle2 className="w-4 h-4 text-[#da8a24] shrink-0" />
+                          <span>Transparency & Annual Audits</span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-white p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                          <CheckCircle2 className="w-4 h-4 text-[#da8a24] shrink-0" />
+                          <span>Compassion & Human Dignity</span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-white p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                          <CheckCircle2 className="w-4 h-4 text-[#da8a24] shrink-0" />
+                          <span>Social Justice & Inclusivity</span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-white p-3 rounded-xl border border-slate-200/60 shadow-sm">
+                          <CheckCircle2 className="w-4 h-4 text-[#da8a24] shrink-0" />
+                          <span>Community Leadership & Trust</span>
+                        </div>
+                      </div>
+                      <div className="pt-3 border-t border-slate-200 text-xs sm:text-sm text-[#da8a24] font-semibold flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#da8a24]" />
+                        <span>Govt. Certified Public Trust</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 7. ORGANIC SECTION DIVIDER (Light to Dark) */}
+      <LightToDarkDivider bgFrom="#ffffff" bgTo="#071b34" />
+
+      {/* 8. OUR PROGRAMS / INITIATIVES SECTION (Dark Blue #071b34 Section with White Glassmorphism Card) */}
+      <section className="py-8 sm:py-12 bg-[#071b34] text-white relative overflow-hidden">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 lg:px-12 space-y-6 relative z-10">
+          
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-1">
+            <div className="space-y-1 max-w-2xl text-left">
+              <span className="text-[#da8a24] font-medium text-xs sm:text-sm uppercase tracking-widest block">
+                WHAT WE DO
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-normal text-white tracking-tight">
+                Our Programs
+              </h2>
+              <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed">
+                Comprehensive care and support for children, elderly, and communities across Tamil Nadu.
+              </p>
+            </div>
+
+            {/* Top Right Small Navigation Arrow Buttons */}
+            <div className="flex items-center gap-2.5 self-end md:self-auto">
+              <button
+                type="button"
+                onClick={handlePrevProgram}
+                aria-label="Previous Program"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-slate-600 bg-[#0a2240] text-white hover:bg-[#da8a24] hover:border-[#da8a24] transition-all flex items-center justify-center cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNextProgram}
+                aria-label="Next Program"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#da8a24] text-[#071b34] hover:bg-white transition-all flex items-center justify-center shadow-md cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Carousel Stage Container */}
+          <div className="relative w-full max-w-[1240px] mx-auto">
+            
+            {/* Desktop Stage: Center Card with White Glassmorphism & No Numbers */}
+            <div className="hidden md:flex items-center justify-between relative overflow-hidden min-h-[380px]">
+              
+              {/* Left Side: Active Program Image */}
+              <div className="w-[44%] h-[340px] lg:h-[380px] rounded-[28px] overflow-hidden relative shadow-xl shrink-0 bg-[#0a2240]">
+                <img
+                  src={PROGRAMS[currentProgramIndex].image}
+                  alt={PROGRAMS[currentProgramIndex].title}
+                  className="w-full h-full object-cover object-center transform transition-transform duration-700 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+              </div>
+
+              {/* Center Overlapping White Glassmorphism Content Panel (No 01, 02, 03, 04 numbers) */}
+              <motion.div
+                key={currentProgramIndex}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                className="w-[56%] -ml-16 relative z-20 bg-white/90 backdrop-blur-md border border-white/60 text-slate-900 rounded-[30px] p-5 lg:p-7 shadow-2xl flex flex-col justify-between space-y-3"
+              >
+                {/* Header Row */}
+                <div className="space-y-2.5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-[#da8a24]/15 text-[#da8a24] flex items-center justify-center shrink-0">
+                        {React.createElement(PROGRAMS[currentProgramIndex].icon, { className: "w-5 h-5" })}
+                      </div>
+                      <div>
+                        <h3 className="text-lg lg:text-2xl font-normal text-[#0a2240] leading-snug">
+                          {PROGRAMS[currentProgramIndex].title}
+                        </h3>
+                        <p className="text-xs text-slate-500 font-normal">
+                          {PROGRAMS[currentProgramIndex].location}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <span className="text-xs font-normal text-[#da8a24] bg-[#da8a24]/15 px-3 py-1 rounded-full whitespace-nowrap shrink-0">
+                      {PROGRAMS[currentProgramIndex].tag}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs lg:text-sm text-slate-600 font-normal leading-relaxed">
+                    {PROGRAMS[currentProgramIndex].description}
+                  </p>
+                </div>
+
+                {/* Feature Bullet List */}
+                <div className="pt-2.5 border-t border-slate-200/60 space-y-2">
+                  {PROGRAMS[currentProgramIndex].details.map((detail, dIdx) => (
+                    <div key={dIdx} className="flex items-center gap-2.5 text-xs lg:text-sm text-slate-700 font-normal">
+                      <div className="w-4.5 h-4.5 rounded-full bg-[#da8a24] text-white flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span>{detail}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Right Side: Peek of Next Program Image (No number overlay) */}
+              <div
+                onClick={handleNextProgram}
+                className="w-[20%] h-[300px] lg:h-[340px] rounded-[24px] overflow-hidden relative opacity-75 scale-95 shrink-0 shadow-lg border border-slate-700/50 cursor-pointer hover:opacity-95 transition-all group"
+              >
+                <img
+                  src={PROGRAMS[(currentProgramIndex + 1) % PROGRAMS.length].image}
+                  alt={PROGRAMS[(currentProgramIndex + 1) % PROGRAMS.length].title}
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+
+            </div>
+
+            {/* Mobile Stage */}
+            <div className="block md:hidden relative overflow-hidden">
+              <div className="relative flex items-center">
+                
+                {/* Main Content Area */}
+                <div className="w-full pr-4">
+                  
+                  {/* Top Image */}
+                  <div className="w-full h-44 sm:h-52 rounded-[22px] overflow-hidden relative shadow-lg bg-[#0a2240]">
+                    <img
+                      src={PROGRAMS[currentProgramIndex].image}
+                      alt={PROGRAMS[currentProgramIndex].title}
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </div>
+
+                  {/* Overlapping Content Box */}
+                  <motion.div
+                    key={`mobile-${currentProgramIndex}`}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="pt-3 relative z-20 bg-transparent text-white border-0 shadow-none space-y-2.5"
+                  >
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-[#da8a24]/15 text-[#da8a24] flex items-center justify-center shrink-0">
+                          {React.createElement(PROGRAMS[currentProgramIndex].icon, { className: "w-4 h-4" })}
+                        </div>
+                        <span className="text-xs font-normal text-[#da8a24] bg-[#da8a24]/15 px-2.5 py-0.5 rounded-full">
+                          {PROGRAMS[currentProgramIndex].tag}
+                        </span>
+                      </div>
+
+                      <h3 className="text-base sm:text-lg font-normal text-white leading-snug">
+                        {PROGRAMS[currentProgramIndex].title}
+                      </h3>
+                      <p className="text-xs text-slate-300 font-normal">
+                        {PROGRAMS[currentProgramIndex].location}
+                      </p>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+                      {PROGRAMS[currentProgramIndex].description}
+                    </p>
+
+                    <div className="pt-2 border-t border-slate-700/60 space-y-1.5">
+                      {PROGRAMS[currentProgramIndex].details.map((detail, dIdx) => (
+                        <div key={dIdx} className="flex items-center gap-2 text-xs sm:text-sm text-slate-200 font-normal">
+                          <div className="w-4 h-4 rounded-full bg-[#da8a24] text-white flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-3 h-3" />
+                          </div>
+                          <span>{detail}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                </div>
+
+                {/* Right Peek Image on Mobile */}
+                <div
+                  onClick={handleNextProgram}
+                  className="w-7 h-44 rounded-r-xl overflow-hidden opacity-60 absolute right-0 top-2 border-l border-slate-700 shrink-0 cursor-pointer"
+                >
+                  <img
+                    src={PROGRAMS[(currentProgramIndex + 1) % PROGRAMS.length].image}
+                    alt="Next"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+              </div>
+            </div>
+
+            {/* Pagination Indicator Dots */}
+            <div className="flex justify-center items-center gap-2 mt-4">
+              {PROGRAMS.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setCurrentProgramIndex(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                  className={`transition-all duration-300 rounded-full cursor-pointer ${
+                    currentProgramIndex === idx
+                      ? 'bg-[#da8a24] w-6 h-2.5'
+                      : 'bg-slate-500/50 hover:bg-slate-400 w-2.5 h-2.5'
+                  }`}
+                />
+              ))}
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 9. ORGANIC SECTION DIVIDER (Dark to Light) */}
+      <DarkToLightDivider bgFrom="#071b34" bgTo="#ffffff" />
+
+      {/* 10. STATUTORY CREDENTIALS (TRUST & TRANSPARENCY - White #ffffff Section) */}
+      <section className="py-16 sm:py-20 bg-white text-slate-900 relative">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 lg:px-12 space-y-12">
+          
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[#da8a24] font-semibold text-xs sm:text-sm uppercase tracking-widest block">
+              TRUST & TRANSPARENCY
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-semibold text-[#0a2240] tracking-tight">
+              100% Legally Compliant & Tax-Deductible NGO
+            </h2>
+            <p className="text-sm text-slate-600 font-normal">
+              Truth Foundation maintains complete transparency with annual public audits and statutory compliance under Government of India guidelines.
+            </p>
+          </div>
+
+          {/* Desktop Display: Borderless & Shadowless Credibility Grid */}
+          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-4">
+            {STATUTORY_CREDENTIALS.map((cred, idx) => (
+              <motion.div
+                key={idx}
+                whileHover={{ y: -6, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="flex flex-col p-4 sm:p-5 bg-[#f8fafc] hover:bg-[#0a2240] rounded-2xl border-0 shadow-none space-y-2.5 cursor-pointer transition-all duration-300 group"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-[#0a2240] text-[#da8a24] group-hover:bg-[#da8a24] group-hover:text-[#0a2240] flex items-center justify-center font-semibold transition-colors duration-300">
+                  <cred.icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-[#0a2240] group-hover:text-white text-base sm:text-lg transition-colors duration-300">{cred.title}</h4>
+                  <p className="text-xs sm:text-sm text-slate-600 group-hover:text-slate-200 pt-1 leading-relaxed font-normal transition-colors duration-300">{cred.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile Display: Borderless & Shadowless Auto-Scrolling Track */}
+          <div className="md:hidden overflow-hidden relative w-full -mx-4 px-4 py-2">
+            <motion.div
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{ repeat: Infinity, duration: 22, ease: 'linear' }}
+              className="flex gap-6 w-max"
+            >
+              {[...STATUTORY_CREDENTIALS, ...STATUTORY_CREDENTIALS].map((cred, idx) => (
+                <div
+                  key={idx}
+                  className="w-[260px] shrink-0 flex flex-col p-5 bg-[#f8fafc] rounded-3xl border-0 shadow-none space-y-2.5"
+                >
+                  <div className="w-11 h-11 rounded-2xl bg-[#0a2240] text-[#da8a24] flex items-center justify-center font-semibold shrink-0">
+                    <cred.icon className="w-5 h-5 text-[#da8a24]" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-[#0a2240] text-base sm:text-lg">{cred.title}</h4>
+                    <p className="text-xs sm:text-sm text-slate-600 pt-1 leading-relaxed font-normal">{cred.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 11. SPONSOR A CAUSE (DESKTOP & MOBILE DESIGN MATCHING REFERENCE IMAGE) */}
+      <section className="py-10 sm:py-16 bg-[#f8fafc] text-slate-900 relative overflow-hidden">
+        
+        {/* Top-Left Botanical Leaf Accent */}
+        <svg className="absolute top-0 left-0 w-24 sm:w-36 lg:w-44 h-auto text-[#da8a24]/20 pointer-events-none z-0" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 150Q40 100 130 30" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+          <path d="M130 30Q100 20 80 40Q110 50 130 30Z" fill="currentColor"/>
+          <path d="M100 55Q75 40 55 60Q85 70 100 55Z" fill="currentColor"/>
+          <path d="M70 80Q45 65 25 85Q55 95 70 80Z" fill="currentColor"/>
+          <path d="M40 105Q20 95 5 110Q30 120 40 105Z" fill="currentColor"/>
+          <path d="M115 42Q125 75 100 90Q105 60 115 42Z" fill="currentColor"/>
+          <path d="M85 68Q95 100 70 115Q75 85 85 68Z" fill="currentColor"/>
+        </svg>
+
+        {/* Top-Right Botanical Leaf Accent */}
+        <svg className="absolute top-0 right-0 w-24 sm:w-36 lg:w-44 h-auto text-[#da8a24]/20 pointer-events-none z-0 transform -scale-x-100" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 150Q40 100 130 30" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+          <path d="M130 30Q100 20 80 40Q110 50 130 30Z" fill="currentColor"/>
+          <path d="M100 55Q75 40 55 60Q85 70 100 55Z" fill="currentColor"/>
+          <path d="M70 80Q45 65 25 85Q55 95 70 80Z" fill="currentColor"/>
+          <path d="M40 105Q20 95 5 110Q30 120 40 105Z" fill="currentColor"/>
+          <path d="M115 42Q125 75 100 90Q105 60 115 42Z" fill="currentColor"/>
+          <path d="M85 68Q95 100 70 115Q75 85 85 68Z" fill="currentColor"/>
+        </svg>
+
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 lg:px-12 space-y-8 sm:space-y-10 relative z-10">
+          
+          {/* Header: Left Aligned with Larger Font Size matching other sections */}
+          <div className="text-left max-w-3xl space-y-2">
+            <span className="text-[#da8a24] font-medium text-xs sm:text-sm uppercase tracking-widest block">
+              SPONSOR A CAUSE
+            </span>
+            <h2 className="text-[22px] xs:text-[26px] sm:text-[38px] lg:text-[44px] font-semibold text-[#0a2240] tracking-tight leading-tight">
+              Make a Direct Impact
+            </h2>
+            <p className="text-sm sm:text-lg lg:text-[18px] text-slate-600 font-normal leading-relaxed">
+              Your support helps us provide nutrition, education, healthcare, and care for children, elderly, and special-needs individuals.
+            </p>
+          </div>
+
+          {/* Desktop Display: 6 Cause Items Grid (Hover shows Donate button) */}
+          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-6 gap-2.5 lg:gap-3">
+            {SPONSOR_CAUSES.map((cause) => (
+              <motion.div
+                key={cause.id}
+                whileHover={{ y: -4 }}
+                onClick={() => {
+                  pixelTracker.trackDonateClick(cause.amount, `Sponsor Cause - ${cause.title}`);
+                  onOpenDonateModal(cause.amount);
+                }}
+                className="bg-transparent border-0 p-0 transition-all duration-300 flex flex-col justify-between cursor-pointer group text-center"
+              >
+                <div>
+                  {/* Taller Image Container (No card borders/gradients/shadows) */}
+                  <div className="relative w-full aspect-[3/4.2] rounded-2xl overflow-hidden bg-slate-100">
+                    <img
+                      src={cause.image}
+                      alt={cause.title}
+                      className="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-105"
+                    />
+                    
+                    {/* Glassmorphism Price Header Above Image with Bigger & Bolder Price */}
+                    <div className="absolute top-2.5 inset-x-2.5 px-3 py-1.5 rounded-xl bg-[#0a2240]/80 backdrop-blur-md flex items-center justify-between text-left border border-white/10">
+                      <span className="text-xs text-slate-300 font-normal">Cause</span>
+                      <span className="text-base sm:text-lg font-bold text-[#da8a24] tracking-tight">
+                        {cause.amountLabel}
+                      </span>
+                    </div>
+
+                    {/* Desktop Hover Only: Shows Donate Button */}
+                    <div className="absolute bottom-2.5 inset-x-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                      <span className="inline-flex items-center justify-center gap-1.5 w-full bg-[#da8a24] hover:bg-[#c77a1e] text-[#0a2240] font-semibold text-xs sm:text-sm py-2.5 px-3 rounded-xl uppercase tracking-wider">
+                        <Heart className="w-4 h-4 fill-[#0a2240]" />
+                        <span>Donate</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Title Below Image: Strictly Normal Font (No Bold) */}
+                  <div className="pt-2.5 pb-1 px-1 flex flex-col items-center text-center">
+                    <h3 className="font-normal text-[#0a2240] text-sm sm:text-base leading-snug group-hover:text-[#da8a24] transition-colors">
+                      {cause.title}
+                    </h3>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile Display: Smooth Horizontal Track (Click redirects directly to donate modal) */}
+          <div className="md:hidden overflow-hidden relative w-full -mx-4 px-4 py-1">
+            <motion.div
+              animate={{ x: ['-50%', '0%'] }}
+              transition={{ repeat: Infinity, duration: 16, ease: 'linear' }}
+              className="flex gap-2.5 w-max"
+            >
+              {[...SPONSOR_CAUSES, ...SPONSOR_CAUSES].map((cause, idx) => (
+                <div
+                  key={`${cause.id}-${idx}`}
+                  onClick={() => {
+                    pixelTracker.trackDonateClick(cause.amount, `Sponsor Cause - ${cause.title}`);
+                    onOpenDonateModal(cause.amount);
+                  }}
+                  className="w-[190px] shrink-0 bg-transparent border-0 p-0 transition-all duration-300 flex flex-col justify-between cursor-pointer group text-center"
+                >
+                  <div>
+                    {/* Taller Image Container with Glassmorphism Overlay */}
+                    <div className="relative w-full aspect-[3/4.2] rounded-2xl overflow-hidden bg-slate-100">
+                      <img
+                        src={cause.image}
+                        alt={cause.title}
+                        className="w-full h-full object-cover object-center"
+                      />
+                      
+                      {/* Glassmorphism Price Header Above Image */}
+                      <div className="absolute top-2 inset-x-2 px-2.5 py-1 rounded-xl bg-[#0a2240]/80 backdrop-blur-md flex items-center justify-between text-left border border-white/10">
+                        <span className="text-[10px] text-slate-300 font-normal">Cause</span>
+                        <span className="text-sm font-bold text-[#da8a24] tracking-tight">
+                          {cause.amountLabel}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Title Below Image: Strictly Normal Font */}
+                    <div className="pt-2 pb-1 px-1 flex flex-col items-center text-center">
+                      <h3 className="font-normal text-[#0a2240] text-xs sm:text-sm leading-snug group-hover:text-[#da8a24] transition-colors">
+                        {cause.title}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 12. FINAL SUPPORT A CAUSE / DONATE CTA */}
+      <section className="py-4 sm:py-6 bg-[#f8fafc] text-white relative overflow-hidden">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-8 lg:px-12 relative z-10">
+          
+          {/* Main Fluid Banner Container - No Card Border, No Shadow, Compact Height */}
+          <div className="relative bg-[#071b34] rounded-2xl sm:rounded-3xl overflow-hidden border-0 shadow-none p-5 sm:p-7 lg:p-8">
+            
+            {/* Ambient Gold Glows */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#da8a24]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#da8a24]/10 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Top Grid: Professional Cartoon Illustration on Left, Content on Right */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center relative z-10">
+              
+              {/* Left Column: Image Frame with Cartoon Illustration */}
+              <div className="lg:col-span-5 relative">
+                <div className="relative w-full h-[180px] sm:h-[220px] lg:h-[230px] overflow-hidden rounded-2xl bg-transparent flex items-center justify-center">
+                  <img
+                    src={sponsorLunchImg}
+                    alt="Support Truth Foundation Community"
+                    className="w-full h-full object-contain object-center"
+                  />
+                </div>
+              </div>
+
+              {/* Right Column: Non-bold Enlarged Title, Subtitle & Donate Button */}
+              <div className="lg:col-span-7 space-y-3 text-left">
+                
+                {/* Heading: Non-bold & Enlarged */}
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-normal text-white tracking-tight leading-tight">
+                  Support a Cause. <span className="text-[#da8a24] font-normal">Change a Life.</span>
+                </h2>
+
+                {/* Subtitle Paragraph: Non-bold & Enlarged */}
+                <p className="text-sm sm:text-base lg:text-lg text-slate-300 font-normal leading-relaxed max-w-xl">
+                  Your contribution brings hope, education, nourishment, and care to children, elderly, and special-needs individuals across Tamil Nadu.
+                </p>
+
+                {/* Golden Pill Donate Button: Non-bold */}
+                <div className="pt-1">
+                  <motion.button
+                    whileHover={{ scale: 1.04, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => {
+                      pixelTracker.trackDonateClick(500, 'About Page Final CTA');
+                      onOpenDonateModal(500);
+                    }}
+                    className="bg-[#da8a24] hover:bg-[#c77a1e] text-[#0a2240] font-normal px-7 py-2.5 rounded-full shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base uppercase tracking-wider min-h-[42px]"
+                  >
+                    <Heart className="w-4.5 h-4.5 fill-[#0a2240]" />
+                    <span>Donate Now</span>
+                  </motion.button>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Bottom Trust Credentials Strip (No Divider Lines, No Icon Background Colors, Non-bold & Enlarged Text) */}
+            <div className="mt-5 sm:mt-6 pt-3 relative z-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4 text-slate-200">
+                
+                <div className="flex items-center gap-2 md:justify-center px-1">
+                  <Lock className="w-4.5 h-4.5 text-[#da8a24] shrink-0" />
+                  <span className="text-xs sm:text-sm font-normal leading-tight">Safe & Secure Donations</span>
+                </div>
+
+                <div className="flex items-center gap-2 md:justify-center px-1">
+                  <Camera className="w-4.5 h-4.5 text-[#da8a24] shrink-0" />
+                  <span className="text-xs sm:text-sm font-normal leading-tight">Direct Impact Delivery</span>
+                </div>
+
+                <div className="flex items-center gap-2 md:justify-center px-1">
+                  <ShieldCheck className="w-4.5 h-4.5 text-[#da8a24] shrink-0" />
+                  <span className="text-xs sm:text-sm font-normal leading-tight">80G Tax Exemption</span>
+                </div>
+
+                <div className="flex items-center gap-2 md:justify-center px-1">
+                  <Award className="w-4.5 h-4.5 text-[#da8a24] shrink-0" />
+                  <span className="text-xs sm:text-sm font-normal leading-tight">Trusted by Communities</span>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* 13. Footer (EXACT EXISTING FOOTER - UNCHANGED) */}
+      <Footer onNavigateHome={(anchor) => onNavigate('home', anchor)} />
+
+      {/* 14. Floating WhatsApp & Donate Widget */}
+      <FloatingWhatsApp onOpenDonateModal={onOpenDonateModal} />
+
+    </div>
+  );
+};
